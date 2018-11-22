@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @SpringBootApplication
 @RestController
-public class DemoApplication {
+public class DemoSpringbootApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(DemoSpringbootApplication.class, args);
     }
 
     @GetMapping("/hello")
     public String hello() {
-        return "hello spring security";
+        throw  new RuntimeException();
+//        return "hello spring security";
     }
 }
