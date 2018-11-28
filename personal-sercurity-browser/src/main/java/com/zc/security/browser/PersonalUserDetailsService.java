@@ -13,10 +13,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * @Auther: zhouchao
- * @Date: 2018/11/27 10:59
- * @Description:
- */
+* @Description:    java类作用描述
+* @Author:         zhouchaoit@sina.com
+* @CreateDate:     2018/11/28 0028 16:15
+* @UpdateUser:     zhouchaoit@sina.com
+* @UpdateDate:     2018/11/28 0028 16:15
+* @UpdateRemark:   修改内容
+* @Version:        1.0
+*/
 @Component
 public class PersonalUserDetailsService implements UserDetailsService {
     private Logger logger = LoggerFactory.getLogger(PersonalUserDetailsService.class);
