@@ -11,7 +11,7 @@ package com.zc.security.core.properties;
 */
 public class BrowserProperties {
 
-    private  String loginPage = "/defaultLogin.html";
+    private  String loginPage = "/signIn.html";
 
     public String getLoginPage() {
         return loginPage;

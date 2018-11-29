@@ -1,5 +1,9 @@
 package com.zc.security.browser;
 
+import com.zc.security.browser.authentication.PersonalAuthenticationFailureHandler;
+import com.zc.security.browser.authentication.PersonalAuthenticationSuccessHandler;
+import com.zc.security.core.properties.SecurityProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,14 +26,28 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+    @Autowired
+    private SecurityProperties securityProperties;
+    @Autowired
+    private PersonalAuthenticationSuccessHandler personalAuthenticationSeccessHander;
+    @Autowired
+    private PersonalAuthenticationFailureHandler personalAuthenticationFailureHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
             .loginPage("/authentication/require")
+            .loginProcessingUrl("/authentication/form")
+            .successHandler(personalAuthenticationSeccessHander)
+            .failureHandler(personalAuthenticationFailureHandler)
             .and()
             .authorizeRequests()
-            .antMatchers("/authentication/require").permitAll()
+            .antMatchers("/authentication/require"
+            ,securityProperties.getBrowser().getLoginPage())
+            .permitAll()
             .anyRequest()
-            .authenticated();
+            .authenticated()
+            .and()
+            .csrf().disable();//跨站请求伪造
     }
 }
