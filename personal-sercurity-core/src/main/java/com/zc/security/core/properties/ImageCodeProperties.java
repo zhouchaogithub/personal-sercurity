@@ -1,13 +1,15 @@
 package com.zc.security.core.properties;
 
-public class ImageCodeProperties {
+public class ImageCodeProperties extends  SmsCodeProperties{
 
     private int width = 67;
     private int height = 23;
-    private int codeCount = 5;
-    private int lineCount = 150;
-    private int expireIn = 60;
-    private String url;
+    private int lineCount = 80;
+
+    public ImageCodeProperties(){
+        setCodeCount(4);
+    }
+
     public int getWidth() {
         return width;
     }
@@ -24,13 +26,6 @@ public class ImageCodeProperties {
         this.height = height;
     }
 
-    public int getCodeCount() {
-        return codeCount;
-    }
-
-    public void setCodeCount(int codeCount) {
-        this.codeCount = codeCount;
-    }
 
     public int getLineCount() {
         return lineCount;
@@ -38,21 +33,5 @@ public class ImageCodeProperties {
 
     public void setLineCount(int lineCount) {
         this.lineCount = lineCount;
-    }
-
-    public int getExpireIn() {
-        return expireIn;
-    }
-
-    public void setExpireIn(int expireIn) {
-        this.expireIn = expireIn;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 }

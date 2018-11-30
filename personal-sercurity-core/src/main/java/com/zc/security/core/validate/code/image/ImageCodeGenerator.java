@@ -1,9 +1,7 @@
-package com.zc.security.core.validate.code;
+package com.zc.security.core.validate.code.image;
 
 import com.zc.security.core.properties.SecurityProperties;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
+import com.zc.security.core.validate.code.ValidateCodeGenerator;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 
@@ -87,7 +85,6 @@ public class ImageCodeGenerator implements ValidateCodeGenerator {
             randomCode.append(strRand);
         }
         g.dispose();
-        // 将四位数字的验证码保存到Session中。
         return new ImageCode(buffImg,randomCode.toString(),securityProperties.getCode().getImage().getExpireIn());
     }
 

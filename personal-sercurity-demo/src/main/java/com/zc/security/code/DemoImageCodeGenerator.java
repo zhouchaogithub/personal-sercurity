@@ -1,15 +1,8 @@
 package com.zc.security.code;
 
-import com.zc.security.core.properties.SecurityProperties;
-import com.zc.security.core.validate.code.ImageCode;
 import com.zc.security.core.validate.code.ValidateCodeGenerator;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.ServletRequestUtils;
+import com.zc.security.core.validate.code.image.ImageCode;
 import org.springframework.web.context.request.ServletWebRequest;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.Random;
 
 /**
 * @Description:    java类作用描述：更换默认验证码生成器

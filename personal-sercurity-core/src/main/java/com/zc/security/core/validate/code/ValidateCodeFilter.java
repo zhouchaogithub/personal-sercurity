@@ -1,9 +1,9 @@
 package com.zc.security.core.validate.code;
 
 import com.zc.security.core.properties.SecurityProperties;
+import com.zc.security.core.validate.code.image.ImageCode;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
@@ -81,7 +81,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
     * @date        2018/11/29 0029 17:09
     */
     private void validate(ServletWebRequest request) throws ServletRequestBindingException {
-        ImageCode  codeInSession = (ImageCode) sessionStrategy
+        ImageCode codeInSession = (ImageCode) sessionStrategy
                 .getAttribute(request, ValidateCodeController.SESSION_KEY);
         String codeInRequest = ServletRequestUtils.getStringParameter(request.getRequest(), "imageCode");
         if (StringUtils.isBlank(codeInRequest)){

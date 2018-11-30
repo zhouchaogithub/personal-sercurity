@@ -12,18 +12,16 @@ import java.time.LocalDateTime;
 * @UpdateRemark:   修改内容
 * @Version:        1.0
 */
-public class ImageCode {
-    private BufferedImage image;
+public class ValidateCode {
+
     private String code;
     private LocalDateTime expireTime;
 
-    public ImageCode(BufferedImage image, String code, int expireIn) {
-        this.image = image;
+    public ValidateCode(String code, int expireIn) {
         this.code = code;
         this.expireTime = LocalDateTime.now().plusSeconds(expireIn);
     }
-    public ImageCode(BufferedImage image, String code, LocalDateTime expireTime) {
-        this.image = image;
+    public ValidateCode(String code, LocalDateTime expireTime) {
         this.code = code;
         this.expireTime = expireTime;
     }
@@ -32,13 +30,6 @@ public class ImageCode {
         return LocalDateTime.now().isAfter(expireTime);
     }
 
-    public BufferedImage getImage() {
-        return image;
-    }
-
-    public void setImage(BufferedImage image) {
-        this.image = image;
-    }
 
     public String getCode() {
         return code;
