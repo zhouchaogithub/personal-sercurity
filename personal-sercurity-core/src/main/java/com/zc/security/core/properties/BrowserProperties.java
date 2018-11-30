@@ -10,8 +10,10 @@ package com.zc.security.core.properties;
 * @Version:        1.0
 */
 public class BrowserProperties {
-
-    private  String loginPage = "/signIn.html";
+    //登录页面
+    private  String loginPage = "/defaultLogin.html";
+    //登录类型 异步返回json，同步重定向
+    private LoginType loginType= LoginType.JSON;
 
     public String getLoginPage() {
         return loginPage;
@@ -19,5 +21,13 @@ public class BrowserProperties {
 
     public void setLoginPage(String loginPage) {
         this.loginPage = loginPage;
+    }
+
+    public LoginType getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(LoginType loginType) {
+        this.loginType = loginType;
     }
 }

@@ -13,8 +13,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 */
 @ConfigurationProperties(prefix = "personal.security")
 public class SecurityProperties{
-    //浏览器配置
+
     private BrowserProperties browser = new BrowserProperties();
+
+    private ValidateProperties code = new ValidateProperties();
 
     public BrowserProperties getBrowser() {
         return browser;
@@ -22,5 +24,13 @@ public class SecurityProperties{
 
     public void setBrowser(BrowserProperties browser) {
         this.browser = browser;
+    }
+
+    public ValidateProperties getCode() {
+        return code;
+    }
+
+    public void setCode(ValidateProperties code) {
+        this.code = code;
     }
 }

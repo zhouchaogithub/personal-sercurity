@@ -3,6 +3,7 @@ package com.zc.security.browser;
 import com.zc.security.browser.authentication.PersonalAuthenticationFailureHandler;
 import com.zc.security.browser.authentication.PersonalAuthenticationSuccessHandler;
 import com.zc.security.core.properties.SecurityProperties;
+import com.zc.security.core.validate.code.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 /**
 * @Description:    java类作用描述
 * @Author:         zhouchaoit@sina.com
@@ -26,16 +29,26 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
     @Autowired
     private SecurityProperties securityProperties;
+
     @Autowired
     private PersonalAuthenticationSuccessHandler personalAuthenticationSeccessHander;
+
     @Autowired
     private PersonalAuthenticationFailureHandler personalAuthenticationFailureHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin()
+        //验证码的过滤器
+        ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
+        validateCodeFilter.setAuthenticationFailureHandler(personalAuthenticationFailureHandler);
+        validateCodeFilter.setSecurityProperties(securityProperties);
+        validateCodeFilter.afterPropertiesSet();
+
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) //将validateCodeFilter设置在UsernamePasswordAuthenticationFilter过滤器之前
+            .formLogin()
             .loginPage("/authentication/require")
             .loginProcessingUrl("/authentication/form")
             .successHandler(personalAuthenticationSeccessHander)
@@ -43,7 +56,8 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/authentication/require"
-            ,securityProperties.getBrowser().getLoginPage())
+            ,securityProperties.getBrowser().getLoginPage(),
+                    "/code/image")
             .permitAll()
             .anyRequest()
             .authenticated()
