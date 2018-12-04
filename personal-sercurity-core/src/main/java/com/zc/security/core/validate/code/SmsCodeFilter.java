@@ -21,16 +21,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
-* @Description:    java类作用描述：校验验证码是否正确
-* @Author:         zhouchaoit@sina.com
-* @CreateDate:     2018/11/29 0029 17:10
-* @UpdateUser:     zhouchaoit@sina.com
-* @UpdateDate:     2018/11/29 0029 17:10
-* @UpdateRemark:   修改内容
-* @Version:        1.0
-*/
-public class ValidateCodeFilter extends OncePerRequestFilter implements InitializingBean {
+public class SmsCodeFilter extends OncePerRequestFilter implements InitializingBean {
 
     private AuthenticationFailureHandler authenticationFailureHandler;
 
@@ -45,22 +36,22 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
     @Override
     public void afterPropertiesSet() throws ServletException {
         super.afterPropertiesSet();
-        String[] configUrls = StringUtils.splitByWholeSeparator(securityProperties.getCode().getImage().getUrl(),",");
+        String[] configUrls = StringUtils.splitByWholeSeparator(securityProperties.getCode().getSms().getUrl(),",");
         if(configUrls!=null && configUrls.length>0){
             for (String configUrl:configUrls) {
                 urls.add(configUrl);
             }
         }
-        urls.add("/authentication/form");
+        urls.add("/authentication/mobile");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         boolean action = false;
         for (String url : urls) {
-                if (pathMatcher.match(url,request.getRequestURI())){
-                    action=true;
-                }
+            if (pathMatcher.match(url,request.getRequestURI())){
+                action=true;
+            }
         }
         if(action){
             try {
@@ -73,17 +64,17 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
         filterChain.doFilter(request,response);
     }
     /**
-    * 方法实现说明：  校验验证码是否正确
-    * @author      zhouchaoit@sina.com
-    * @param
-    * @return
-    * @exception
-    * @date        2018/11/29 0029 17:09
-    */
+     * 方法实现说明：  校验验证码是否正确
+     * @author      zhouchaoit@sina.com
+     * @param
+     * @return
+     * @exception
+     * @date        2018/11/29 0029 17:09
+     */
     private void validate(ServletWebRequest request) throws ServletRequestBindingException {
-        ImageCode codeInSession = (ImageCode) sessionStrategy
-                .getAttribute(request, ValidateCodeProcessor.SESSION_KEY_PREFIX+"IMAGE");
-        String codeInRequest = ServletRequestUtils.getStringParameter(request.getRequest(), "imageCode");
+        ValidateCode codeInSession = (ValidateCode) sessionStrategy
+                .getAttribute(request, ValidateCodeProcessor.SESSION_KEY_PREFIX+"SMS");
+        String codeInRequest = ServletRequestUtils.getStringParameter(request.getRequest(), "smsCode");
         if (StringUtils.isBlank(codeInRequest)){
             throw  new ValidateCodeException("验证码的值不能为空");
         }
@@ -91,13 +82,13 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
             throw new ValidateCodeException("验证码不存在");
         }
         if (codeInSession.isExpried()){
-            sessionStrategy.removeAttribute(request,ValidateCodeProcessor.SESSION_KEY_PREFIX+"IMAGE");
+            sessionStrategy.removeAttribute(request,ValidateCodeProcessor.SESSION_KEY_PREFIX+"SMS");
             throw  new ValidateCodeException("验证码已过期");
         }
         if (!StringUtils.equalsIgnoreCase(codeInSession.getCode(),codeInRequest)){
             throw  new ValidateCodeException("验证码不匹配");
         }
-        sessionStrategy.removeAttribute(request,ValidateCodeProcessor.SESSION_KEY_PREFIX+"IMAGE");
+        sessionStrategy.removeAttribute(request,ValidateCodeProcessor.SESSION_KEY_PREFIX+"SMS");
     }
 
     public AuthenticationFailureHandler getAuthenticationFailureHandler() {

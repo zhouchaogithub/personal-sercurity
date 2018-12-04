@@ -7,7 +7,7 @@ import java.io.File;
  * @Date: 2018/11/21 14:11
  * @Description:
  */
-public class ClearMavenRepositoryUnuseJarUtil {
+public class CleanMavenRepositoryUnusingJarUtil {
     // 仓库根目录
     static String root = "D:/tools/maven/Repository";
 

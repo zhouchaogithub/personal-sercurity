@@ -30,14 +30,13 @@ public class ValidateCodeController {
     @Autowired
     private SmsCodeSender smsCodeSender;
 
-    public static final String SESSION_KEY = "SESSION_KEY_IMAGE_CODE";
 
     private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
      @GetMapping("/image")
     public void  createImageCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ImageCode imageCode = (ImageCode) imageCodeGenerator.generate(new ServletWebRequest(request));
-        sessionStrategy.setAttribute(new ServletWebRequest(request),SESSION_KEY,imageCode);
+        sessionStrategy.setAttribute(new ServletWebRequest(request),ValidateCodeProcessor.SESSION_KEY_PREFIX+"IMAGE",imageCode);
         ImageIO.write(imageCode.getImage(),"JPEG" ,response.getOutputStream());
      }
     @GetMapping("/sms")
@@ -45,7 +44,7 @@ public class ValidateCodeController {
          //获取验证码
          ValidateCode smsCode = smsCodeGenerator.generate(new ServletWebRequest(request));
          //将验证码放到session中
-         sessionStrategy.setAttribute(new ServletWebRequest(request),SESSION_KEY,smsCode);
+         sessionStrategy.setAttribute(new ServletWebRequest(request),ValidateCodeProcessor.SESSION_KEY_PREFIX+"SMS",smsCode);
          //获取手机号
          String mobile = ServletRequestUtils.getRequiredStringParameter(request, "mobile");
          //发送短信
