@@ -1,21 +1,20 @@
 package com.zc.security.browser;
 
-import com.zc.security.browser.authentication.PersonalAuthenticationFailureHandler;
-import com.zc.security.browser.authentication.PersonalAuthenticationSuccessHandler;
+import com.zc.security.core.authentication.AbstractChannelSecurityConfig;
+import com.zc.security.core.authentication.mobile.SmsCodeAuthenticationSecurityConfig;
+import com.zc.security.core.properties.SecurityConstants;
 import com.zc.security.core.properties.SecurityProperties;
-import com.zc.security.core.validate.code.ValidateCodeFilter;
+import com.zc.security.core.validate.code.ValidateCodeSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.social.security.SpringSocialConfigurer;
 
 import javax.sql.DataSource;
 
@@ -29,53 +28,54 @@ import javax.sql.DataSource;
 * @Version:        1.0
 */
 @Configuration
-public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
+public class BrowserSecurityConfig extends AbstractChannelSecurityConfig {
 
-    @Autowired
-    private SecurityProperties securityProperties;
-
-    @Autowired
-    private PersonalAuthenticationSuccessHandler personalAuthenticationSeccessHander;
-
-    @Autowired
-    private PersonalAuthenticationFailureHandler personalAuthenticationFailureHandler;
 
     @Autowired
     private DataSource dataSource;
 
     @Autowired
+    private ValidateCodeSecurityConfig validateCodeSecurityConfig;
+
+    @Autowired
+    private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
+
+    @Autowired
+    private PersistentTokenRepository persistentTokenRepository;
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private SpringSocialConfigurer personalSocialSecurityConfig;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //验证码的过滤器
-        ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
-        validateCodeFilter.setAuthenticationFailureHandler(personalAuthenticationFailureHandler);
-        validateCodeFilter.setSecurityProperties(securityProperties);
-        validateCodeFilter.afterPropertiesSet();
-
-        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) //将validateCodeFilter设置在UsernamePasswordAuthenticationFilter过滤器之前
-            .formLogin()
-                .loginPage("/authentication/require")
-                .loginProcessingUrl("/authentication/form")
-                .successHandler(personalAuthenticationSeccessHander)
-                .failureHandler(personalAuthenticationFailureHandler)
+      applyPasswordAuthenticationConfig(http);
+        http.apply(validateCodeSecurityConfig)
                 .and()
-            .rememberMe()
-                .tokenRepository(persistentTokenRepository())
+             .apply(smsCodeAuthenticationSecurityConfig)
+                .and()
+             .apply(personalSocialSecurityConfig)
+                .and()
+             .rememberMe()
+                .tokenRepository(persistentTokenRepository)
                 .tokenValiditySeconds(securityProperties.getBrowser().getRememberMeSeconds())
                 .userDetailsService(userDetailsService)
                 .and()
-            .authorizeRequests()
-            .antMatchers("/authentication/require"
-            ,securityProperties.getBrowser().getLoginPage(),
-                    "/code/*"
-            )
-            .permitAll()
-            .anyRequest()
-            .authenticated()
-            .and()
-            .csrf().disable();//跨站请求伪造
+             .authorizeRequests()
+                .antMatchers(
+                        SecurityConstants.DEFAULT_UNAUTHENTICATION_URL,
+                        SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_MOBILE,
+                        SecurityConstants.DEFAULT_VALIDATE_CODE_URL_PREFIX+"/*",
+                        securityProperties.getBrowser().getLoginPage()
+                ).permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .csrf().disable();
     }
 
 
