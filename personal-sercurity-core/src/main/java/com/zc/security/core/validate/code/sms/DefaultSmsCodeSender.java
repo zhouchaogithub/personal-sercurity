@@ -12,6 +12,6 @@ public class DefaultSmsCodeSender  implements  SmsCodeSender{
 
     @Override
     public void send(String mobile, String code) {
-        System.out.println("发送短信验证码，该短信验证码发送器需要具体应用提供，验证码是："+code);
+        System.out.println("发送短信验证码，该短信验证码发送器需要具体应用提供，也可使用当前默认验证码发送器，验证码是："+code);
     }
 }
