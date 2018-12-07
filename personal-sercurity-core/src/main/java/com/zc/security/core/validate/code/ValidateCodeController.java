@@ -30,7 +30,6 @@ public class ValidateCodeController {
     @Autowired
     private SmsCodeSender smsCodeSender;
 
-
     private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
      @GetMapping("/image")
